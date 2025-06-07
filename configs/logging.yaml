@@ -1,0 +1,34 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  console:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  json:
+    format: '{"time": "%(asctime)s", "name": "%(name)s", "level": "%(levelname)s", "message": "%(message)s"}'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: WARNING
+    formatter: console
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: json
+    filename: 'logs/app.log'
+    maxBytes: 1048576  # 1 MB
+    backupCount: 5
+    encoding: 'utf-8'
+  
+loggers:
+  rag_app:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+root:
+  level: DEBUG
+  handlers: [console, file]
