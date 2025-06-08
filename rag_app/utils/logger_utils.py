@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger('rag_app')
 
-def log_action(module_name:str, action:str, extra_info:dict=None, level:str='info'):
+def log_action(module_name:str, action:str, extra_info:dict=None, level:str='info') -> None:
     """
     Log an action with module name, action type, and optional extra information.
     
@@ -34,7 +34,7 @@ def log_action(module_name:str, action:str, extra_info:dict=None, level:str='inf
 
     
 
-def log_exception(module_name:str, action:str, exception:Exception):
+def log_exception(module_name:str, action:str, exception:Exception) -> None:
     """
     Log an exception with module name, action type, and exception details.
     
