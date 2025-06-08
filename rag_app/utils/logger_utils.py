@@ -1,6 +1,5 @@
 import logging
-import traceback
-import json
+
 
 logger = logging.getLogger('rag_app')
 
@@ -14,14 +13,26 @@ def log_action(module_name:str, action:str, extra_info:dict=None, level:str='inf
         extra_info (dict, optional): Additional information to log. Defaults to None.
         level (str): Logging level ('debug', 'info', 'warning', 'error', 'critical'). Defaults to 'info'.
     """
-    log_message = {
-        'module': module_name,
-        'action': action,
-        'extra_info': extra_info or {}
-    }
+    if level.lower() not in ['debug', 'info', 'warning', 'error', 'critical']:
+        raise ValueError(f"Invalid log level: {level}.")
     
-    log_func = getattr(logger, level, logger.info)
-    log_func(json.dumps(log_message, ensure_ascii=False, indent=2))
+    log_func = getattr(logger, level.lower(), logger.info)
+    log_func(
+        action,
+        extra={
+            'context': {
+                # 'request_id': request_id,
+                # 'conversation_id': conversation_id,
+                # 'user_id': user_id,
+                'module_name': module_name,
+                'action': action,
+                'extra_info': extra_info or {},
+                'exception': None
+            }
+        }
+    )
+
+    
 
 def log_exception(module_name:str, action:str, exception:Exception):
     """
@@ -32,11 +43,21 @@ def log_exception(module_name:str, action:str, exception:Exception):
         action (str): Description of the action being performed when the exception occurred.
         exception (Exception): The exception instance to log.
     """
-    log_message = {
-        'module': module_name,
-        'action': action,
-        'exception': str(exception),
-        'traceback': traceback.format_exc()
-    }
-    
-    logger.error(json.dumps(log_message, ensure_ascii=False, indent=2))
+    logger.error(
+        action,
+        exc_info=True,
+        extra={
+            'context': {
+                # 'request_id': request_id,
+                # 'conversation_id': conversation_id,
+                # 'user_id': user_id,
+                'module_name': module_name,
+                'action': action,
+                'extra_info': {},
+                'exception': {
+                    'type': type(exception).__name__,
+                    'message': str(exception)
+                }
+            }
+        }
+    )
